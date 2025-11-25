@@ -25,26 +25,31 @@ toolchain ?= gnu
 
 ifeq ($(toolchain), cray)
   ifndef PE_ENV
+    CC  = craycc
     CXX = crayCC
   endif
   OMP_FLAGS = -homp -hstd=c++11
 else ifeq ($(toolchain), pgi)
   ifndef PE_ENV
+    CC  = pgcc
     CXX = pgc++
   endif
   OMP_FLAGS = -mp
 else ifeq ($(toolchain), intel)
   ifndef PE_ENV
+    CC  = icc
     CXX = icpcp
   endif
   OMP_FLAGS = -Wall -qopenmp -std=c++11
 else ifeq ($(toolchain), gnu)
   ifndef PE_ENV
+    CC  = gcc
     CXX = g++
   endif
   OMP_FLAGS = -Wall -fopenmp -std=c++11
 else ifeq ($(toolchain), clang)
   ifndef PE_ENV
+    CC  = clang
     CXX = clang++
   endif
   OMP_FLAGS = -Wall -fopenmp -std=c++11
@@ -112,7 +117,7 @@ all: $(PROGRAMS) $(LIBRARIES)
 
 %.o: %.cpp
 	$(CPU_COMPILE) $*.cpp -o $*.o
-	@gcc -std=c++11 -MM $(CPU_CPPFLAGS) $*.cpp > $*.d
+	@$(CC) -std=c++11 -MM $(CPU_CPPFLAGS) $*.cpp > $*.d
 	@cp -f $*.d $*.d.tmp
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
